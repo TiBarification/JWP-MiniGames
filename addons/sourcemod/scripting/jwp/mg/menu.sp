@@ -46,7 +46,7 @@ public int g_MainMenu_Callback(Menu menu, MenuAction action, int param1, int par
 						{
 							CPrintToChat(param1, "%t%t", "JWP_MG_PREFIX", "JWP_MG_NO_ACCESS");
 							g_MainMenu.Display(param1, MENU_TIME_FOREVER);
-							return;
+							return 0;
 						}
 					}
 					
@@ -76,18 +76,20 @@ public int g_MainMenu_Callback(Menu menu, MenuAction action, int param1, int par
 				else
 				{
 					LogError("Specified game name %s not found", info);
-					return;
+					return 0;
 				}
 				
 				g_iGameId = getGameId(info);
 				if (g_iGameId == -1)
 				{
 					LogError("Specified game with id %d does not exist", g_iGameId);
-					return;
+					return 0;
 				}
 			}
 		}
 	}
+
+	return 0;
 }
 
 public int g_PropsMenu_Callback(Menu menu, MenuAction action, int param1, int param2)
@@ -98,7 +100,7 @@ public int g_PropsMenu_Callback(Menu menu, MenuAction action, int param1, int pa
 		{
 			if (IsValidClient(param1))
 			{
-				if (JWP_IsFlood(param1, 2)) return;
+				if (JWP_IsFlood(param1, 2)) return 0;
 				char path[PLATFORM_MAX_PATH], name[32];
 				menu.GetItem(param2, path, sizeof(path), _, name, sizeof(name));
 				
@@ -117,6 +119,8 @@ public int g_PropsMenu_Callback(Menu menu, MenuAction action, int param1, int pa
 			}
 		}
 	}
+
+	return 0;
 }
 
 /* Working with menu in Jail Warden Pro */

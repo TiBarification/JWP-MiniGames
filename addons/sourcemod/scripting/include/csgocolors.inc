@@ -221,7 +221,7 @@ stock void CRemoveTags(char[] szMessage, int maxlength)
  * @param tag   		Color Tag.
  * @return			 	True when color is supported, otherwise false
  */
-stock void CColorAllowed(Colors color)
+stock bool CColorAllowed(Colors color)
 {
 	if (!CEventIsHooked)
 	{
@@ -474,7 +474,7 @@ stock void CSetupProfile()
 	}
 }
 
-public Action CEvent_MapStart(Handle event, const char[] name, bool dontBroadcast)
+public void CEvent_MapStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	CSetupProfile();
 	

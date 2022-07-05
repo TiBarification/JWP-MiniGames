@@ -22,7 +22,7 @@
 
 bool g_bIsCSGO;
 
-int g_iGameMode = -1, g_iGameId = -1;
+int g_iGameMode = -1, g_iGameId = -1, g_iLastGame;
 bool g_bIsGameRunning = false;
 
 char g_cGameName[32], g_cGameRules[192], g_cMusicAll[PLATFORM_MAX_PATH];
@@ -215,6 +215,8 @@ public Action Command_Whistle(int client, int args)
 public Action WhistleCooldownTimer(Handle timer, any client)
 {
     g_hWhistleCooldown[client] = null;
+
+    return Plugin_Stop;
 }
 
 public Action Listener_LRCommand(int client, int args)

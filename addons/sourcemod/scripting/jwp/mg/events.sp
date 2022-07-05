@@ -54,6 +54,8 @@ public void OnClientDisconnect(int client)
 
 public void Event_OnRoundStart(Event event, const char[] name, bool silent)
 {
+    g_iLastGame = -1;
+    
     if (g_iCoolDown != 0)
     {
         if (g_bGamePassed) g_iCoolDownCounter++;
@@ -109,18 +111,7 @@ public void Event_OnRoundStart(Event event, const char[] name, bool silent)
         
         PrintToChatAll("%s", g_cGameRules); // Print rules to all chat
         
-        if (g_iGameMode == zombiemod)
-            ProcessZombie();
-        else if (g_iGameMode == hidenseek)
-            ProcessHidenSeek();
-        else if (g_iGameMode == chickenhunt)
-            ProcessChickenHunt();
-        else if (g_iGameMode == zeusdm)
-            ProcessZeusDm();
-        else if (g_iGameMode == hotpotato)
-            ProcessHotPotato();
-        else if (g_iGameMode == catchnfree)
-            ProcessCatchnFree();
+        RequestFrame(StartGames);
         
         g_KvConfig.GetString("musicAll", g_cMusicAll, sizeof(g_cMusicAll), "");
         if (g_cMusicAll[0] != NULL_STRING[0])
@@ -149,6 +140,22 @@ public void Event_OnRoundStart(Event event, const char[] name, bool silent)
             // PrintToChatAll("Ambient music: %s", g_cMusicAll);
         }
     }
+}
+
+void StartGames()
+{
+    if (g_iGameMode == zombiemod)
+        ProcessZombie();
+    else if (g_iGameMode == hidenseek)
+        ProcessHidenSeek();
+    else if (g_iGameMode == chickenhunt)
+        ProcessChickenHunt();
+    else if (g_iGameMode == zeusdm)
+        ProcessZeusDm();
+    else if (g_iGameMode == hotpotato)
+        ProcessHotPotato();
+    else if (g_iGameMode == catchnfree)
+        ProcessCatchnFree();
 }
 
 public void Event_OnRoundEnd(Event event, const char[] name, bool silent)
@@ -197,6 +204,7 @@ public void Event_OnRoundEnd(Event event, const char[] name, bool silent)
         else if (g_iGameMode == catchnfree)
             g_CvarTeammatesEnemies.SetBool(false, true, false);
         
+        g_iLastGame = g_iGameMode;
         g_iGameMode = -1;
         g_bIsGameRunning = false;
         
@@ -295,7 +303,7 @@ public Action Event_OnPlayerDeath(Event event, const char[] name, bool silent)
             CS_TerminateRound(1.0, CSRoundEnd_TerroristWin);
         }
     }
-    else if (g_iGameMode == hidenseek)
+    else if (g_iGameMode == hidenseek || g_iLastGame == hidenseek)
     {
         TiB_SetThirdPerson(client, false);
         
@@ -440,9 +448,9 @@ public Action Missed(Handle timer, Handle datapack)
     int client = ReadPackCell(datapack);
     missTimer[client] = null; // clear timer handle
     
-    int userid = ReadPackCell(datapack);
+    //int userid = ReadPackCell(datapack);
     if (!IsValidClient(client, _, false)) // Not in game anymore or dead
-        return;
+        return Plugin_Stop;
     if (g_iGameMode == hidenseek)
     {
         bool isSlapDamage = view_as<bool>(g_KvConfig.GetNum("slap_penalty", 0));
@@ -457,6 +465,8 @@ public Action Missed(Handle timer, Handle datapack)
                 SDKHooks_TakeDamage(client, client, client, float(hp), DMG_CLUB);
         }
     }
+
+    return Plugin_Stop;
 }
 
 public bool KnockbackTRFilter(int entity, int contentsMask)
@@ -615,4 +625,6 @@ public int pRules_Callback(Menu menu, MenuAction action, int param1, int param2)
     {
         case MenuAction_End: delete menu;
     }
+
+    return 0;
 }
