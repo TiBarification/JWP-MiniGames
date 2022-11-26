@@ -163,4 +163,6 @@ public Action Timer_CatchnFreeDelay(Handle timer, any client)
 		CPrintToChat(client, "%t%t", "JWP_MG_PREFIX", "JWP_MG_CATCH_CAN_DEFROST");
 	
 	g_hCatchedTimer[client] = null;
+
+	return Plugin_Stop;
 }
